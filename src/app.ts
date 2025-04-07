@@ -31,16 +31,42 @@ export function createApp(): Express {
   });
 
   app.post("/tasks", (req: Request, res: Response) => {
-    // TODO: Implement create task logic
+    const newTask: Task = {
+      id: tasks.length + 1,
+      description: req.body.description,
+      completed: req.body.completed || false,
+    };
+    tasks.push(newTask);
+    res.status(201).json(newTask);
   });
 
   app.put("/tasks/:id", (req: Request, res: Response) => {
-    // TODO: Implement update task logic
+    const taskId = parseInt(req.params.id);
+    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+
+    if (taskIndex !== -1) {
+      const updatedTask: Task = {
+        id: taskId,
+        description: req.body.description,
+        completed: req.body.completed,
+      };
+      tasks[taskIndex] = updatedTask;
+      res.json(updatedTask);
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
   });
 
   app.delete("/tasks/:id", (req: Request, res: Response) => {
     const taskId = parseInt(req.params.id);
-    // TODO: Implement delete task logic
+    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+
+    if (taskIndex !== -1) {
+      tasks.splice(taskIndex, 1);
+      res.json({ message: "Task deleted" });
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
   });
 
   return app;
